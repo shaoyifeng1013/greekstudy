@@ -19,6 +19,7 @@ func NewCustomHttpServer() *CustomHttpServer {
 	router.HandleFunc("/header", headerHandler)
 	router.HandleFunc("/version", versionHandler)
 	router.HandleFunc("/print", printHandler)
+	router.HandleFunc("/localhost/healthz", healthCheckHandler)
 
 	s := &http.Server{
 		Addr:           ":8080",
@@ -51,5 +52,9 @@ func versionHandler(w http.ResponseWriter, r *http.Request) {
 func printHandler(w http.ResponseWriter, r *http.Request) {
 	sIp := r.Header.Get("X-Forwarded-For")
 	fmt.Println(fmt.Sprintf("sourceIp: %s, response code: %d", sIp, 200))
+	w.WriteHeader(200)
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
