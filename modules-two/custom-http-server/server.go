@@ -3,9 +3,8 @@ package custom_http_server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"k8s.io/utils/env"
 	"net/http"
-	"net/http/httputil"
+	"os"
 	"time"
 )
 
@@ -33,18 +32,15 @@ func NewCustomHttpServer() *CustomHttpServer {
 }
 
 func headerHandler(w http.ResponseWriter, r *http.Request) {
-	request, err := httputil.DumpRequest(r, false)
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-		return
+	for k, v := range r.Header {
+		fmt.Printf("%s,%v", k, v)
+		w.Header().Set(k, fmt.Sprintf("%v", v))
 	}
 	w.WriteHeader(200)
-	w.Write(request)
 }
 
 func versionHandler(w http.ResponseWriter, r *http.Request) {
-	v := env.GetString("study.golang.version", "not found")
+	v := os.Getenv("study.golang.version")
 	w.WriteHeader(200)
 	w.Write([]byte(fmt.Sprintf("%s:%s", "version", v)))
 }
